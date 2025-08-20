@@ -4,26 +4,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburger = document.querySelector('.hamburger');
     const navLinks = document.querySelector('.nav-links');
 
-    hamburger.addEventListener('click', () => {
-        navLinks.classList.toggle('active');
-        // Muda o ícone de barras para 'X' e vice-versa
-        const icon = hamburger.querySelector('i');
-        if (icon.classList.contains('fa-bars')) {
-            icon.classList.remove('fa-bars');
-            icon.classList.add('fa-times');
-        } else {
-            icon.classList.remove('fa-times');
-            icon.classList.add('fa-bars');
-        }
-    });
+    if (hamburger) {
+        hamburger.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            const icon = hamburger.querySelector('i');
+            if (icon.classList.contains('fa-bars')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        });
+    }
 
-    // Fecha o menu ao clicar em um link (útil em one-page sites)
     document.querySelectorAll('.nav-links a').forEach(link => {
         link.addEventListener('click', () => {
             if (navLinks.classList.contains('active')) {
                 navLinks.classList.remove('active');
-                hamburger.querySelector('i').classList.remove('fa-times');
-                hamburger.querySelector('i').classList.add('fa-bars');
+                const icon = hamburger.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
             }
         });
     });
@@ -32,24 +33,49 @@ document.addEventListener('DOMContentLoaded', () => {
     const observerOptions = {
         root: null,
         rootMargin: '0px',
-        threshold: 0.1 // O elemento é considerado 'visível' quando 10% dele está na tela
+        threshold: 0.1
     };
 
     const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
-            // Se o elemento está visível
             if (entry.isIntersecting) {
                 entry.target.classList.add('visible');
-                // Para a observação depois que a animação acontece uma vez
                 observer.unobserve(entry.target); 
             }
         });
     }, observerOptions);
 
-    // Seleciona todos os elementos que devem ser animados e os observa
     const elementsToAnimate = document.querySelectorAll('.animate-on-scroll');
     elementsToAnimate.forEach(element => {
         observer.observe(element);
     });
 
+    // --- NOVA LÓGICA PARA O MODAL DE IMAGEM (LIGHTBOX) ---
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-image');
+    const closeModal = document.querySelector('.close-modal');
+    const carImages = document.querySelectorAll('.car-image');
+
+    carImages.forEach(img => {
+        img.addEventListener('click', () => {
+            modal.classList.add('show');
+            modalImg.src = img.src;
+        });
+    });
+
+    const hideModal = () => {
+        modal.classList.remove('show');
+    };
+
+    if(closeModal) {
+        closeModal.addEventListener('click', hideModal);
+    }
+
+    if(modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                hideModal();
+            }
+        });
+    }
 });
